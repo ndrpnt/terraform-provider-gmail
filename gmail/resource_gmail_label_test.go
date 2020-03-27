@@ -3,6 +3,7 @@ package gmail
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
@@ -22,16 +23,23 @@ func init() {
 }
 
 func testSweepLabels(_ string) error {
-	srv := testAccProvider.Meta().(*gmail.Service)
+	srv, err := gmailService()
+	if err != nil {
+		return fmt.Errorf("could not retrieve gmail service: %v", err)
+	}
 
 	labels, err := srv.Users.Labels.List(user).Do()
 	if err != nil {
-		return fmt.Errorf("error retrieving labels: %v", err)
+		return fmt.Errorf("could not fetch labels: %v", err)
 	}
 
 	for _, label := range labels.Labels {
+		if !strings.HasPrefix(label.Name, testLabelPrefix) {
+			continue
+		}
+
 		if err := srv.Users.Labels.Delete(user, label.Id).Do(); err != nil {
-			return fmt.Errorf("error deleting label %s: %v", label.Name, err)
+			return fmt.Errorf("could not delete label %s: %v", label.Name, err)
 		}
 	}
 
