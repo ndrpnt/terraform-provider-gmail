@@ -11,15 +11,29 @@ func dataSourceGmailLabel() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceGmailLabelRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ExactlyOneOf: []string{"id", "name"},
+			},
 			"name": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ExactlyOneOf: []string{"id", "name"},
+			},
+			"label_list_visibility": {
 				Type:     schema.TypeString,
-				Required: true,
+				Computed: true,
 			},
 			"message_list_visibility": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"label_list_visibility": {
+			"background_color": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"text_color": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -34,22 +48,39 @@ func dataSourceGmailLabel() *schema.Resource {
 func dataSourceGmailLabelRead(data *schema.ResourceData, meta interface{}) error {
 	srv := meta.(*gmail.Service)
 
-	labels, err := srv.Users.Labels.List(user).Do()
-	if err != nil {
-		return err
-	}
-
-	name := data.Get("name").(string)
-	for _, label := range labels.Labels {
-		if label.Name == name {
-			data.SetId(label.Id)
-			data.Set("message_list_visibility", label.MessageListVisibility)
-			data.Set("label_list_visibility", label.LabelListVisibility)
-			data.Set("type", label.Type)
-
-			return nil
+	if id, ok := data.GetOk("id"); !ok {
+		labels, err := srv.Users.Labels.List(user).Do()
+		if err != nil {
+			return fmt.Errorf("could not fetch labels: %v", err)
 		}
+
+		name := data.Get("name").(string)
+		for _, label := range labels.Labels {
+			if label.Name == name {
+				data.SetId(label.Id)
+				break
+			}
+		}
+	} else {
+		data.SetId(id.(string))
 	}
 
-	return fmt.Errorf("Your query returned no results. Please change your search criteria and try again.")
+	label, err := srv.Users.Labels.Get(user, data.Id()).Do()
+	if err != nil {
+		if is404Error(err) {
+			return fmt.Errorf("Your query returned no results. Please change your search criteria and try again.")
+		}
+		return fmt.Errorf("could not fetch label %s: %v", data.Id(), err)
+	}
+
+	data.Set("name", label.Name)
+	data.Set("label_list_visibility", label.LabelListVisibility)
+	data.Set("message_list_visibility", label.MessageListVisibility)
+	if label.Type == "user" {
+		data.Set("background_color", label.Color.BackgroundColor)
+		data.Set("text_color", label.Color.TextColor)
+	}
+	data.Set("type", label.Type)
+
+	return nil
 }
