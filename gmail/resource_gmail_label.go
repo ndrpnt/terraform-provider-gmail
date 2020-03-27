@@ -3,7 +3,6 @@ package gmail
 import (
 	"fmt"
 	"log"
-	"regexp"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
@@ -115,10 +114,6 @@ func resourceGmailLabel() *schema.Resource {
 		"#42d692",
 		"#16a765",
 	}
-	trailingWhitespace, err := regexp.Compile("[[:space:]]$")
-	if err != nil {
-		panic(err)
-	}
 
 	return &schema.Resource{
 		Create: resourceGmailLabelCreate,
@@ -132,7 +127,7 @@ func resourceGmailLabel() *schema.Resource {
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringDoesNotMatch(trailingWhitespace, "name must not end with whitespaces"),
+				ValidateFunc: noTrailingWhitespace(),
 			},
 			"label_list_visibility": {
 				Type:         schema.TypeString,
