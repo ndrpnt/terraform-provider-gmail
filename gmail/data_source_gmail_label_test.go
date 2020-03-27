@@ -134,7 +134,7 @@ func TestAccGmailLabelDataSource_system(t *testing.T) {
 }
 
 func TestAccGmailLabelDataSource_userById(t *testing.T) {
-	labelName := "terraform-label-" + acctest.RandString(10)
+	labelName := "terraform-test-label-" + acctest.RandString(10)
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
@@ -157,7 +157,7 @@ func TestAccGmailLabelDataSource_userById(t *testing.T) {
 }
 
 func TestAccGmailLabelDataSource_userByName(t *testing.T) {
-	labelName := "terraform-label-" + acctest.RandString(10)
+	labelName := "terraform-test-label-" + acctest.RandString(10)
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
