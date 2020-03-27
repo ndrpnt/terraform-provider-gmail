@@ -155,10 +155,6 @@ func testAccGmailLabelResourceConfigBasic(labelName string) string {
 	return fmt.Sprintf(`
 resource gmail_label this {
   name = "%s"
-	label_list_visibility = "labelShow"
-	message_list_visibility = "show"
-	background_color = "#999999"
-	text_color = "#f3f3f3"
 }
 `, labelName)
 }
