@@ -12,6 +12,8 @@ import (
 	"google.golang.org/api/googleapi"
 )
 
+const testLabelPrefix = "terraform-test-label-"
+
 func init() {
 	resource.AddTestSweepers("gmail_label", &resource.Sweeper{
 		Name: "gmail_label",
@@ -37,8 +39,8 @@ func testSweepLabels(_ string) error {
 }
 
 func TestAccGmailLabelResource_basic(t *testing.T) {
-	labelName1 := "terraform-test-label-" + acctest.RandString(10)
-	labelName2 := "terraform-test-label-" + acctest.RandString(10)
+	labelName1 := testLabelPrefix + acctest.RandString(10)
+	labelName2 := testLabelPrefix + acctest.RandString(10)
 	var label1, label2 gmail.Label
 
 	resource.ParallelTest(t, resource.TestCase{
@@ -74,7 +76,7 @@ func TestAccGmailLabelResource_basic(t *testing.T) {
 }
 
 func TestAccGmailLabelResource_import(t *testing.T) {
-	labelName := "terraform-test-label-" + acctest.RandString(10)
+	labelName := testLabelPrefix + acctest.RandString(10)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
