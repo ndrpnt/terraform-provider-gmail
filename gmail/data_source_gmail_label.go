@@ -76,9 +76,12 @@ func dataSourceGmailLabelRead(data *schema.ResourceData, meta interface{}) error
 	data.Set("name", label.Name)
 	data.Set("label_list_visibility", label.LabelListVisibility)
 	data.Set("message_list_visibility", label.MessageListVisibility)
-	if label.Type == "user" {
+	if label.Color != nil {
 		data.Set("background_color", label.Color.BackgroundColor)
 		data.Set("text_color", label.Color.TextColor)
+	} else {
+		data.Set("background_color", defaultLabelBackgroundColor)
+		data.Set("text_color", defaultLabelTextColor)
 	}
 	data.Set("type", label.Type)
 

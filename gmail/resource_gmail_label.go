@@ -9,6 +9,11 @@ import (
 	"google.golang.org/api/gmail/v1"
 )
 
+const (
+	defaultLabelBackgroundColor = "#999999"
+	defaultLabelTextColor       = "#f3f3f3"
+)
+
 func resourceGmailLabel() *schema.Resource {
 	validColors := []string{
 		"#000000",
@@ -144,13 +149,13 @@ func resourceGmailLabel() *schema.Resource {
 			"background_color": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      "#999999",
+				Default:      defaultLabelBackgroundColor,
 				ValidateFunc: validation.StringInSlice(validColors, false),
 			},
 			"text_color": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      "#f3f3f3",
+				Default:      defaultLabelTextColor,
 				ValidateFunc: validation.StringInSlice(validColors, false),
 			},
 		},
@@ -195,8 +200,13 @@ func resourceGmailLabelRead(data *schema.ResourceData, meta interface{}) error {
 	data.Set("name", label.Name)
 	data.Set("label_list_visibility", label.LabelListVisibility)
 	data.Set("message_list_visibility", label.MessageListVisibility)
-	data.Set("background_color", label.Color.BackgroundColor)
-	data.Set("text_color", label.Color.TextColor)
+	if label.Color != nil {
+		data.Set("background_color", label.Color.BackgroundColor)
+		data.Set("text_color", label.Color.TextColor)
+	} else {
+		data.Set("background_color", defaultLabelBackgroundColor)
+		data.Set("text_color", defaultLabelTextColor)
+	}
 
 	return nil
 }
