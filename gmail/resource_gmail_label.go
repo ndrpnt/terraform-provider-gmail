@@ -132,7 +132,7 @@ func resourceGmailLabel() *schema.Resource {
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: noTrailingWhitespace(),
+				ValidateFunc: noLeadingTrailingRepeatedSpaces(),
 			},
 			"label_list_visibility": {
 				Type:         schema.TypeString,
