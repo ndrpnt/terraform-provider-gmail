@@ -8,18 +8,19 @@ import (
 )
 
 func dataSourceGmailLabel() *schema.Resource {
+	idOrName := []string{"id", "name"}
 	return &schema.Resource{
 		Read: dataSourceGmailLabelRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ExactlyOneOf: []string{"id", "name"},
+				ExactlyOneOf: idOrName,
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ExactlyOneOf: []string{"id", "name"},
+				ExactlyOneOf: idOrName,
 			},
 			"label_list_visibility": {
 				Type:     schema.TypeString,
