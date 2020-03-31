@@ -2,7 +2,6 @@ package gmail
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 	"testing"
 
@@ -10,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"google.golang.org/api/gmail/v1"
-	"google.golang.org/api/googleapi"
 )
 
 const testLabelPrefix = "terraform-test-label-"
@@ -136,9 +134,7 @@ func testAccCheckGmailLabelDestroy(s *terraform.State) error {
 
 		if label, err := srv.Users.Labels.Get(user, rs.Primary.ID).Do(); err == nil {
 			return fmt.Errorf("label %s still exists", label.Name)
-		} else if apiError, ok := err.(*googleapi.Error); !ok {
-			return fmt.Errorf("invalid error returned: %v", err)
-		} else if apiError.Code != http.StatusNotFound {
+		} else if !is404Error(err) {
 			return fmt.Errorf("could not fetch label: %v", err)
 		}
 	}
