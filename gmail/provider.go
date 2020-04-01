@@ -23,7 +23,8 @@ func Provider() terraform.ResourceProvider {
 			"gmail_label": dataSourceGmailLabel(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"gmail_label": resourceGmailLabel(),
+			"gmail_label":  resourceGmailLabel(),
+			"gmail_filter": resourceGmailFilter(),
 		},
 		Schema: map[string]*schema.Schema{
 			"credentials_file": {
